@@ -1,5 +1,6 @@
 .fps-slider {
-  /* Override any of these from the theme. */
+  /* Override any of these from the theme. The aspect ratio is set per
+     slider from its settings, so override it with !important if needed. */
   --fps-slider-aspect-ratio: 16 / 9;
   --fps-slider-control-size: 2.5rem;
   --fps-slider-control-fg: #fff;

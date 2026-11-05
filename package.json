@@ -21,7 +21,8 @@
   "type": "module",
   "dependencies": {
     "embla-carousel": "^8.6.0",
-    "embla-carousel-autoplay": "^8.6.0"
+    "embla-carousel-autoplay": "^8.6.0",
+    "embla-carousel-fade": "^8.6.0"
   },
   "devDependencies": {
     "typescript": "^7.0.2",

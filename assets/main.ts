@@ -1,8 +1,7 @@
-import EmblaCarousel, { type EmblaCarouselType } from 'embla-carousel';
+import EmblaCarousel, { type EmblaCarouselType, type EmblaPluginType } from 'embla-carousel';
 import Autoplay from 'embla-carousel-autoplay';
+import Fade from 'embla-carousel-fade';
 import './main.css';
-
-const AUTOPLAY_DELAY = 5000;
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -31,86 +30,111 @@ function syncSlides(embla: EmblaCarouselType): void {
   });
 }
 
+/**
+ * Options come from the shortcode's data attributes:
+ * - data-autoplay: delay in ms (absent when autoplay is off)
+ * - data-transition: "slide" | "fade"
+ */
 function init(root: HTMLElement): void {
   const viewport = root.querySelector<HTMLElement>('.fps-slider__viewport');
-  const controls = root.querySelector<HTMLElement>('.fps-slider__controls');
-  const toggle = root.querySelector<HTMLButtonElement>('.fps-slider__toggle');
-  const prev = root.querySelector<HTMLButtonElement>('.fps-slider__prev');
-  const next = root.querySelector<HTMLButtonElement>('.fps-slider__next');
 
-  // Controls are only rendered when there's more than one slide.
-  if (!viewport || !controls || !toggle || !prev || !next) {
+  if (!viewport || viewport.querySelectorAll('.fps-slider__slide').length < 2) {
     return;
   }
+
+  const delay = Number(root.dataset.autoplay) || 0;
+  const plugins: EmblaPluginType[] = [];
 
   // Hover/focus pausing is handled below rather than by the plugin: its
   // built-in listeners would resume playback after the user pressed pause.
   // stopOnInteraction: true just means "don't auto-resume after a drag".
-  const autoplay = Autoplay({
-    delay: AUTOPLAY_DELAY,
-    playOnInit: false,
-    stopOnInteraction: true,
-    stopOnMouseEnter: false,
-    stopOnFocusIn: false,
-  });
+  const autoplay =
+    delay > 0
+      ? Autoplay({
+          delay,
+          playOnInit: false,
+          stopOnInteraction: true,
+          stopOnMouseEnter: false,
+          stopOnFocusIn: false,
+        })
+      : null;
 
-  const embla = EmblaCarousel(viewport, { loop: true }, [autoplay]);
+  if (autoplay) {
+    plugins.push(autoplay);
+  }
+
+  if (root.dataset.transition === 'fade') {
+    plugins.push(Fade());
+  }
+
+  const embla = EmblaCarousel(viewport, { loop: true }, plugins);
   const container = embla.containerNode();
+  const toggle = root.querySelector<HTMLButtonElement>('.fps-slider__toggle');
 
   let paused = reduceMotion;
   let hovered = false;
   let focused = false;
 
   const update = (): void => {
-    const playing = !paused && !hovered && !focused;
+    const playing = autoplay !== null && !paused && !hovered && !focused;
 
     if (playing) {
       autoplay.play();
     } else {
-      autoplay.stop();
+      autoplay?.stop();
     }
 
-    toggle.dataset.playing = String(!paused);
-    toggle.setAttribute('aria-label', (paused ? toggle.dataset.labelPlay : toggle.dataset.labelPause) ?? '');
+    if (toggle) {
+      toggle.dataset.playing = String(!paused);
+      toggle.setAttribute('aria-label', (paused ? toggle.dataset.labelPlay : toggle.dataset.labelPause) ?? '');
+    }
 
     // Announce slide changes only when the user is driving them.
     container.setAttribute('aria-live', playing ? 'off' : 'polite');
   };
 
-  root.addEventListener('mouseenter', () => {
-    hovered = true;
-    update();
-  });
+  if (autoplay) {
+    root.addEventListener('mouseenter', () => {
+      hovered = true;
+      update();
+    });
 
-  root.addEventListener('mouseleave', () => {
-    hovered = false;
-    update();
-  });
+    root.addEventListener('mouseleave', () => {
+      hovered = false;
+      update();
+    });
 
-  root.addEventListener('focusin', () => {
-    focused = true;
-    update();
-  });
+    root.addEventListener('focusin', () => {
+      focused = true;
+      update();
+    });
 
-  root.addEventListener('focusout', (event) => {
-    focused = root.contains(event.relatedTarget as Node | null);
-    update();
-  });
+    root.addEventListener('focusout', (event) => {
+      focused = root.contains(event.relatedTarget as Node | null);
+      update();
+    });
 
-  toggle.addEventListener('click', () => {
-    paused = !paused;
-    update();
-  });
+    toggle?.addEventListener('click', () => {
+      paused = !paused;
+      update();
+    });
 
-  prev.addEventListener('click', () => embla.scrollPrev(reduceMotion));
-  next.addEventListener('click', () => embla.scrollNext(reduceMotion));
+    // The plugin stops on pointerDown; resume after a drag if nothing else is pausing.
+    embla.on('pointerUp', update);
+  }
 
-  // The plugin stops on pointerDown; resume after a drag if nothing else is pausing.
-  embla.on('pointerUp', update);
+  root.querySelector('.fps-slider__prev')?.addEventListener('click', () => embla.scrollPrev(reduceMotion));
+  root.querySelector('.fps-slider__next')?.addEventListener('click', () => embla.scrollNext(reduceMotion));
+
   embla.on('select', syncSlides);
-
   syncSlides(embla);
-  controls.hidden = false;
+
+  const controls = root.querySelector<HTMLElement>('.fps-slider__controls');
+
+  if (controls) {
+    controls.hidden = false;
+  }
+
   update();
 }
 

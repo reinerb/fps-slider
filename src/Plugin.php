@@ -8,6 +8,7 @@ class Plugin {
 
     public function boot(): void {
         (new Assets($this->file))->register();
+        (new Options())->register();
         (new Fields())->register();
         (new Shortcode())->register();
     }

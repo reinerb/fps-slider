@@ -3,7 +3,8 @@
 namespace FpsSlider;
 
 /**
- * [fps-slider] — renders the current page's gallery as an Embla carousel.
+ * [fps-slider] — renders the current page's gallery as an Embla carousel,
+ * configured by its Settings.
  *
  * Markup follows Embla's viewport > container > slide structure, plus the
  * W3C APG carousel pattern for accessibility. Without JS it degrades to the
@@ -20,12 +21,14 @@ final class Shortcode
 
     public function render(): string
     {
-        $images = $this->images();
+        $postId = (int) (get_the_ID() ?: get_queried_object_id());
+        $images = $this->images($postId);
 
         if ($images === []) {
             return '';
         }
 
+        $settings    = Settings::forPost($postId);
         $total       = count($images);
         $containerId = wp_unique_id('fps-slider-');
         $slides      = '';
@@ -39,43 +42,78 @@ final class Shortcode
             );
         }
 
+        // Read by the script; data-autoplay is the delay in ms, absent when off.
+        $attributes = [
+            'class'                => 'fps-slider',
+            'role'                 => 'region',
+            'aria-roledescription' => 'carousel',
+            'aria-label'           => __('Image gallery', 'fps-slider'),
+            'style'                => '--fps-slider-aspect-ratio: ' . $settings->aspectRatio,
+            'data-transition'      => $settings->transition,
+            'data-autoplay'        => $settings->autoplay ? (string) $settings->delayMs() : null,
+        ];
+
         return sprintf(
-            '<div class="fps-slider" role="region" aria-roledescription="carousel" aria-label="%s">'
-                . '%s'
-                . '<div class="fps-slider__viewport"><div class="fps-slider__container" id="%s" aria-live="off">%s</div></div>'
-            . '</div>',
-            esc_attr__('Image gallery', 'fps-slider'),
-            $total > 1 ? $this->controls($containerId) : '',
+            '<div%s>%s<div class="fps-slider__viewport"><div class="fps-slider__container" id="%s" aria-live="off">%s</div></div></div>',
+            $this->attributes($attributes),
+            $total > 1 ? $this->controls($containerId, $settings) : '',
             esc_attr($containerId),
             $slides,
         );
     }
 
     /**
+     * @param array<string, string|null> $attributes Null values are omitted.
+     */
+    private function attributes(array $attributes): string
+    {
+        $html = '';
+
+        foreach ($attributes as $name => $value) {
+            if ($value !== null) {
+                $html .= sprintf(' %s="%s"', $name, esc_attr($value));
+            }
+        }
+
+        return $html;
+    }
+
+    /**
      * Pause/play first, per APG, so it's the first thing keyboard users reach.
      * Hidden until the script initialises the carousel.
      */
-    private function controls(string $containerId): string
+    private function controls(string $containerId, Settings $settings): string
     {
-        $pause = __('Pause slideshow', 'fps-slider');
-        $play  = __('Play slideshow', 'fps-slider');
+        $buttons = '';
+        $target  = esc_attr($containerId);
 
-        return sprintf(
-            '<div class="fps-slider__controls" hidden>'
-                . '<button type="button" class="fps-slider__button fps-slider__toggle" aria-controls="%1$s" aria-label="%2$s" data-label-pause="%2$s" data-label-play="%3$s" data-playing="true">%4$s%5$s</button>'
-                . '<button type="button" class="fps-slider__button fps-slider__prev" aria-controls="%1$s" aria-label="%6$s">%7$s</button>'
-                . '<button type="button" class="fps-slider__button fps-slider__next" aria-controls="%1$s" aria-label="%8$s">%9$s</button>'
-            . '</div>',
-            esc_attr($containerId),
-            esc_attr($pause),
-            esc_attr($play),
-            $this->icon('M7 5h3v14H7zM14 5h3v14h-3z', 'pause'),
-            $this->icon('M8 5v14l11-7z', 'play'),
-            esc_attr__('Previous slide', 'fps-slider'),
-            $this->icon('M15.4 7.4 14 6l-6 6 6 6 1.4-1.4-4.6-4.6z'),
-            esc_attr__('Next slide', 'fps-slider'),
-            $this->icon('M8.6 16.6 10 18l6-6-6-6-1.4 1.4 4.6 4.6z'),
-        );
+        if ($settings->autoplay) {
+            $pause = esc_attr__('Pause slideshow', 'fps-slider');
+
+            $buttons .= sprintf(
+                '<button type="button" class="fps-slider__button fps-slider__toggle" aria-controls="%s" aria-label="%s" data-label-pause="%s" data-label-play="%s" data-playing="true">%s%s</button>',
+                $target,
+                $pause,
+                $pause,
+                esc_attr__('Play slideshow', 'fps-slider'),
+                $this->icon('M7 5h3v14H7zM14 5h3v14h-3z', 'pause'),
+                $this->icon('M8 5v14l11-7z', 'play'),
+            );
+        }
+
+        if ($settings->arrows) {
+            $buttons .= sprintf(
+                '<button type="button" class="fps-slider__button fps-slider__prev" aria-controls="%1$s" aria-label="%2$s">%3$s</button>'
+                    . '<button type="button" class="fps-slider__button fps-slider__next" aria-controls="%1$s" aria-label="%4$s">%5$s</button>',
+                $target,
+                esc_attr__('Previous slide', 'fps-slider'),
+                $this->icon('M15.4 7.4 14 6l-6 6 6 6 1.4-1.4-4.6-4.6z'),
+                esc_attr__('Next slide', 'fps-slider'),
+                $this->icon('M8.6 16.6 10 18l6-6-6-6-1.4 1.4 4.6 4.6z'),
+            );
+        }
+
+        return $buttons === '' ? '' : '<div class="fps-slider__controls" hidden>' . $buttons . '</div>';
     }
 
     private function icon(string $path, string $modifier = ''): string
@@ -90,13 +128,13 @@ final class Shortcode
     /**
      * @return list<string> Rendered <img> tags.
      */
-    private function images(): array
+    private function images(int $postId): array
     {
-        if (!function_exists('get_field')) {
+        if ($postId <= 0 || !function_exists('get_field')) {
             return [];
         }
 
-        $ids    = array_filter(array_map('intval', (array) (get_field(Fields::GALLERY) ?: [])));
+        $ids    = array_filter(array_map('intval', (array) (get_field(Fields::GALLERY, $postId) ?: [])));
         $images = [];
 
         foreach (array_values($ids) as $index => $id) {
