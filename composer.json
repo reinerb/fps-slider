@@ -1,0 +1,15 @@
+{
+    "name": "btr/fps-slider",
+    "autoload": {
+        "psr-4": {
+            "Btr\\FpsSlider\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "ben",
+            "email": "ben@tidemarkstudio.dev"
+        }
+    ],
+    "require": {}
+}
