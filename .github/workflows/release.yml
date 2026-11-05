@@ -1,0 +1,61 @@
+# Builds the installable plugin zip and attaches it to a GitHub release.
+#
+# To release: bump "Version" in fps-slider.php, commit, then
+#   git tag v1.2.3 && git push origin v1.2.3
+# Sites pick the update up from the release's fps-slider.zip.
+
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check tag matches plugin version
+        run: |
+          version=$(sed -n 's/^ \* Version: *//p' fps-slider.php | tr -d '[:space:]')
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match plugin Version $version in fps-slider.php"
+            exit 1
+          fi
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Build assets
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm typecheck
+          pnpm build
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+
+      - name: Install production PHP dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction --no-progress
+
+      # Ship only runtime files: no sources, node_modules or tooling config.
+      - name: Package
+        run: |
+          mkdir -p build/fps-slider
+          cp -R fps-slider.php src dist vendor build/fps-slider/
+          (cd build && zip -rq ../fps-slider.zip fps-slider)
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" fps-slider.zip --title "$GITHUB_REF_NAME" --generate-notes --verify-tag
