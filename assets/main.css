@@ -59,6 +59,26 @@
   aspect-ratio: auto;
 }
 
+/*
+ * Page builders put the shortcode inside wrappers (Divi: module > inner div),
+ * and a percentage height only resolves if every wrapper passes the height
+ * down. So stretch each wrapper between the slider and its nearest column,
+ * but nothing outside that column.
+ */
+:is(.et_pb_column, .wp-block-column):not(:has(:is(.et_pb_column, .wp-block-column) .fps-slider--fill))
+  :has(.fps-slider--fill) {
+  height: 100%;
+}
+
+/*
+ * wpautop wraps the shortcode in <p> (e.g. in a Divi Text module); the parser
+ * splits that around the slider's <div>, leaving empty paragraphs whose
+ * spacing would push the slider out of its column.
+ */
+:has(> .fps-slider) > p:empty {
+  display: none;
+}
+
 /* Controls ---------------------------------------------------------------- */
 
 .fps-slider__controls {

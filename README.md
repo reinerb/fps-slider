@@ -35,9 +35,12 @@ The slider pauses on hover and keyboard focus, has a pause button whenever autop
 
 ### Fill container
 
-The **Fill container** aspect ratio makes the slider match the height of the column it's in, e.g. beside text in a two-column Columns block. Put the shortcode directly in the column, and leave the column's vertical alignment unset so it stretches to the height of the row.
+The **Fill container** aspect ratio makes the slider match the height of the column it's in, e.g. beside text in a two-column layout. The column must stretch to the height of its row:
 
-Where there's no height to match, the slider uses 16:9 instead. That includes columns stacked on mobile, and rows whose other column is shorter than a 16:9 slider would be.
+- **Divi 4:** turn on the row's **Design → Sizing → Equalize Column Heights**. Put the shortcode in a Code or Text module that's the only module in its column.
+- **Block editor Columns block:** leave the column's vertical alignment unset.
+
+Where there's no height to match, the slider uses 16:9 instead. That includes columns stacked on mobile, rows without equal column heights, and rows whose other column is shorter than a 16:9 slider would be.
 
 ### Styling
 

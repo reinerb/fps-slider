@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       FPS Slider
  * Description:       Embla carousel via the [fps-slider] shortcode.
- * Version:           1.0.4
+ * Version:           1.0.5
  * Requires at least: 6.3
  * Requires PHP:      8.2
  * Update URI:        https://github.com/reinerb/fps-slider

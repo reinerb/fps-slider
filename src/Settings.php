@@ -131,7 +131,7 @@ final class Settings
                 ->conditionalLogic(self::when($base))
                 ->column(50),
             Select::make('Aspect ratio', self::ASPECT_RATIO)
-                ->helperText('Images are cropped to fill this shape. “Fill container” matches the height of the column the slider sits in, e.g. beside text in a two-column layout. Where there’s no height to match, such as when columns stack on mobile, it uses 16:9.')
+                ->helperText('Images are cropped to fill this shape. “Fill container” matches the height of the column the slider sits in, e.g. beside text in a two-column layout. In Divi, turn on the row’s Equalize Column Heights. Where there’s no height to match, such as when columns stack on mobile, it uses 16:9.')
                 ->choices(self::ASPECT_RATIOS)
                 ->default($this->aspectRatio)
                 ->conditionalLogic(self::when($base))
