@@ -31,13 +31,20 @@ final class Settings
         'fade'  => 'Fade',
     ];
 
-    /** Values are output as the CSS aspect-ratio, so keep them CSS-valid. */
+    /** Fill the container's height instead of using a fixed ratio. */
+    public const FILL = 'fill';
+
+    /** Used for FILL where the container has no height to fill. */
+    private const FILL_FALLBACK_RATIO = '16 / 9';
+
+    /** Values other than FILL are output as the CSS aspect-ratio, so keep them CSS-valid. */
     private const ASPECT_RATIOS = [
-        '21 / 9' => '21:9 — panoramic',
-        '16 / 9' => '16:9 — widescreen',
-        '3 / 2'  => '3:2 — classic photo',
-        '4 / 3'  => '4:3',
-        '1 / 1'  => '1:1 — square',
+        '21 / 9'   => '21:9 — panoramic',
+        '16 / 9'   => '16:9 — widescreen',
+        '3 / 2'    => '3:2 — classic photo',
+        '4 / 3'    => '4:3',
+        '1 / 1'    => '1:1 — square',
+        self::FILL => 'Fill container',
     ];
 
     private const MIN_DELAY = 2.0;
@@ -72,6 +79,19 @@ final class Settings
         }
 
         return $global;
+    }
+
+    public function fillsContainer(): bool
+    {
+        return $this->aspectRatio === self::FILL;
+    }
+
+    /**
+     * The CSS aspect-ratio: the chosen ratio, or the fallback when filling.
+     */
+    public function cssAspectRatio(): string
+    {
+        return $this->fillsContainer() ? self::FILL_FALLBACK_RATIO : $this->aspectRatio;
     }
 
     public function delayMs(): int
@@ -111,7 +131,7 @@ final class Settings
                 ->conditionalLogic(self::when($base))
                 ->column(50),
             Select::make('Aspect ratio', self::ASPECT_RATIO)
-                ->helperText('Images are cropped to fill this shape.')
+                ->helperText('Images are cropped to fill this shape. “Fill container” matches the height of the column the slider sits in, e.g. beside text in a two-column layout. Where there’s no height to match, such as when columns stack on mobile, it uses 16:9.')
                 ->choices(self::ASPECT_RATIOS)
                 ->default($this->aspectRatio)
                 ->conditionalLogic(self::when($base))

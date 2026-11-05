@@ -34,6 +34,31 @@
   -webkit-user-drag: none;
 }
 
+/* Fill container --------------------------------------------------------- */
+
+/*
+ * Takes the container's height where it has one, e.g. a column stretched to
+ * the height of its row. Where it doesn't (columns stacked on mobile), the
+ * 100% height computes to auto and the aspect ratio applies instead. The
+ * explicit width keeps the ratio from resizing the width when height is set.
+ */
+.fps-slider--fill {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: var(--fps-slider-aspect-ratio);
+}
+
+.fps-slider--fill .fps-slider__viewport,
+.fps-slider--fill .fps-slider__container,
+.fps-slider--fill .fps-slider__slide,
+.fps-slider--fill .fps-slider__image {
+  height: 100%;
+}
+
+.fps-slider--fill .fps-slider__image {
+  aspect-ratio: auto;
+}
+
 /* Controls ---------------------------------------------------------------- */
 
 .fps-slider__controls {

@@ -46,11 +46,11 @@ final class Shortcode
 
         // Read by the script; data-autoplay is the delay in ms, absent when off.
         $attributes = [
-            'class'                => 'fps-slider',
+            'class'                => 'fps-slider' . ($settings->fillsContainer() ? ' fps-slider--fill' : ''),
             'role'                 => 'region',
             'aria-roledescription' => 'carousel',
             'aria-label'           => __('Image gallery', 'fps-slider'),
-            'style'                => '--fps-slider-aspect-ratio: ' . $settings->aspectRatio,
+            'style'                => '--fps-slider-aspect-ratio: ' . $settings->cssAspectRatio(),
             'data-transition'      => $settings->transition,
             'data-autoplay'        => $settings->autoplay ? (string) $settings->delayMs() : null,
         ];

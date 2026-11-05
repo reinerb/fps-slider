@@ -33,6 +33,12 @@ define('FPS_SLIDER_GITHUB_TOKEN', 'github_pat_...');
 
 The slider pauses on hover and keyboard focus, has a pause button whenever autoplay is on, and starts paused for visitors who prefer reduced motion.
 
+### Fill container
+
+The **Fill container** aspect ratio makes the slider match the height of the column it's in, e.g. beside text in a two-column Columns block. Put the shortcode directly in the column, and leave the column's vertical alignment unset so it stretches to the height of the row.
+
+Where there's no height to match, the slider uses 16:9 instead. That includes columns stacked on mobile, and rows whose other column is shorter than a 16:9 slider would be.
+
 ### Styling
 
 Override these CSS custom properties on `.fps-slider` from your theme:
