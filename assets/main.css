@@ -1,1 +1,93 @@
+.fps-slider {
+  /* Override any of these from the theme. */
+  --fps-slider-aspect-ratio: 16 / 9;
+  --fps-slider-control-size: 2.5rem;
+  --fps-slider-control-fg: #fff;
+  --fps-slider-control-bg: rgb(0 0 0 / 0.55);
+  --fps-slider-control-bg-hover: rgb(0 0 0 / 0.8);
 
+  position: relative;
+}
+
+.fps-slider__viewport {
+  overflow: hidden;
+}
+
+.fps-slider__container {
+  display: flex;
+  touch-action: pan-y pinch-zoom;
+}
+
+.fps-slider__slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+.fps-slider__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: var(--fps-slider-aspect-ratio);
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Controls ---------------------------------------------------------------- */
+
+.fps-slider__controls {
+  position: absolute;
+  z-index: 1;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  display: flex;
+  gap: 0.375rem;
+}
+
+.fps-slider__controls[hidden] {
+  display: none;
+}
+
+.fps-slider__button {
+  display: grid;
+  place-items: center;
+  width: var(--fps-slider-control-size);
+  height: var(--fps-slider-control-size);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--fps-slider-control-bg);
+  box-shadow: none;
+  color: var(--fps-slider-control-fg);
+  line-height: 0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.fps-slider__button:hover {
+  background: var(--fps-slider-control-bg-hover);
+}
+
+/* Light ring with a dark halo, so focus shows on any image. */
+.fps-slider__button:focus-visible {
+  outline: 2px solid var(--fps-slider-control-fg);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--fps-slider-control-bg-hover);
+}
+
+.fps-slider__icon {
+  width: 60%;
+  height: 60%;
+}
+
+.fps-slider__toggle[data-playing='true'] .fps-slider__icon--play,
+.fps-slider__toggle[data-playing='false'] .fps-slider__icon--pause {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fps-slider__button {
+    transition: none;
+  }
+}
