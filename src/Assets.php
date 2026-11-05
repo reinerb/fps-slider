@@ -2,6 +2,8 @@
 
 namespace FpsSlider;
 
+defined('ABSPATH') || exit;
+
 use WP_Post;
 
 /**

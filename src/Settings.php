@@ -2,6 +2,8 @@
 
 namespace FpsSlider;
 
+defined('ABSPATH') || exit;
+
 use Extended\ACF\ConditionalLogic;
 use Extended\ACF\Fields\ButtonGroup;
 use Extended\ACF\Fields\Field;

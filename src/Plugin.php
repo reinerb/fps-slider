@@ -2,6 +2,8 @@
 
 namespace FpsSlider;
 
+defined('ABSPATH') || exit;
+
 class Plugin {
     public function __construct(private string $file) {
     }

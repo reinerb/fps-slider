@@ -2,6 +2,8 @@
 
 namespace FpsSlider;
 
+defined('ABSPATH') || exit;
+
 use Extended\ACF\Fields\PostObject;
 use Extended\ACF\Fields\Tab;
 use Extended\ACF\Location;

@@ -2,6 +2,8 @@
 
 namespace FpsSlider;
 
+defined('ABSPATH') || exit;
+
 /**
  * [fps-slider] — renders the current page's gallery as an Embla carousel,
  * configured by its Settings.
@@ -130,7 +132,9 @@ final class Shortcode
      */
     private function images(int $postId): array
     {
-        if ($postId <= 0 || !function_exists('get_field')) {
+        // The shortcode can render outside the post content (widgets, templates),
+        // where core's password check on the_content doesn't apply.
+        if ($postId <= 0 || !function_exists('get_field') || post_password_required($postId)) {
             return [];
         }
 

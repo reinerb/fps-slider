@@ -2,6 +2,8 @@
 
 namespace FpsSlider;
 
+defined('ABSPATH') || exit;
+
 use Extended\ACF\Fields\Gallery;
 use Extended\ACF\Fields\TrueFalse;
 use Extended\ACF\Location;
