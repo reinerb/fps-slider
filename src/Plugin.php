@@ -8,5 +8,6 @@ class Plugin {
 
     public function boot(): void {
         (new Assets($this->file))->register();
+        (new Fields())->register();
     }
 }

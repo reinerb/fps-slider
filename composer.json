@@ -11,5 +11,7 @@
             "email": "ben@tidemarkstudio.dev"
         }
     ],
-    "require": {}
+    "require": {
+        "vinkla/extended-acf": "^15.1"
+    }
 }
