@@ -5,7 +5,7 @@
  * Version:           1.0.0
  * Requires at least: 6.3
  * Requires PHP:      8.0
- * Update URI:        false
+ * Update URI:        https://github.com/reinerb/fps-slider
  */
 
 defined('ABSPATH') || exit;

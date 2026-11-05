@@ -13,5 +13,6 @@ class Plugin {
         (new Options())->register();
         (new Fields())->register();
         (new Shortcode())->register();
+        (new Updater($this->file))->register();
     }
 }

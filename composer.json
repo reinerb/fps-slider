@@ -12,6 +12,7 @@
         }
     ],
     "require": {
-        "vinkla/extended-acf": "^15.1"
+        "vinkla/extended-acf": "^15.1",
+        "yahnis-elsts/plugin-update-checker": "^5.7"
     }
 }
