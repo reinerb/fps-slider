@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    // Vite does the bundling/transpiling; tsc is only a type checker here.
+    "noEmit": true,
+
+    // Environment: modern browser code bundled by Vite.
+    "target": "es2022",
+    "lib": ["es2022", "dom", "dom.iterable"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "types": ["vite/client"],
+
+    // Required for per-file transpilation by Vite.
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noUncheckedSideEffectImports": true,
+
+    // Type checking
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    "skipLibCheck": true
+  },
+  "include": ["assets/**/*.ts", "vite.config.ts"]
+}
