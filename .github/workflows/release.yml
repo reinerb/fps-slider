@@ -45,6 +45,11 @@ jobs:
           php-version: '8.2'
           tools: composer:v2
 
+      # Runs on the minimum supported PHP ("Requires PHP" in fps-slider.php),
+      # so syntax from newer versions fails here rather than on sites.
+      - name: Lint PHP
+        run: find fps-slider.php src -name '*.php' -print0 | xargs -0 -n1 php -l
+
       - name: Install production PHP dependencies
         run: composer install --no-dev --optimize-autoloader --no-interaction --no-progress
 

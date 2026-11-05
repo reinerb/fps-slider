@@ -12,7 +12,12 @@
         }
     ],
     "require": {
-        "vinkla/extended-acf": "^15.1",
+        "vinkla/extended-acf": "^14.6",
         "yahnis-elsts/plugin-update-checker": "^5.7"
+    },
+    "config": {
+        "platform": {
+            "php": "8.2.0"
+        }
     }
 }

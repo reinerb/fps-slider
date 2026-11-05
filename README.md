@@ -5,7 +5,7 @@ A WordPress plugin that adds an image carousel via the `[fps-slider]` shortcode,
 ## Requirements
 
 - WordPress 6.3+
-- PHP 8.0+
+- PHP 8.2+
 - [Advanced Custom Fields PRO](https://www.advancedcustomfields.com/pro/). The plugin won't load without it and shows an admin notice instead.
 
 ## Installation
