@@ -2,7 +2,7 @@
     "name": "btr/fps-slider",
     "autoload": {
         "psr-4": {
-            "Btr\\FpsSlider\\": "src/"
+            "FpsSlider\\": "src/"
         }
     },
     "authors": [
